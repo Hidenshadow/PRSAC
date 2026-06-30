@@ -1,0 +1,52 @@
+# Local Residual Repair default configuration.
+#
+# LRR freezes the clean PPO policy and trains only a bounded residual action
+# correction from local planner-parameter repairs generated during training.
+
+num_iterations: 20
+rollout_episodes_per_iteration: 20
+max_repair_states_per_iteration: 256
+repair_batch_size: 64
+repair_epochs: 5
+learning_rate: 0.0003
+
+delta_max_fraction: 0.10
+search_radius_fraction: 0.05
+pairwise_candidate_mode: none
+improvement_epsilon: 0.25
+repair_target_mode: best
+soft_target_temperature: 2.0
+surface_ridge: 0.001
+surface_max_step_fraction: 1.0
+surface_allow_diagonal: true
+repair_target_blend: 1.0
+target_residual_norm_clip: 0.0
+beta: 2.0
+w_max: 5.0
+lambda_zero: 0.001
+use_repair_gate: false
+lambda_gate: 0.1
+gate_initial_logit: 2.0
+positive_gate_weight: 1.0
+negative_gate_weight: 1.0
+negative_gate_max_improvement: 0.0
+
+eval_episodes: 0  # match source PPO run_config command_args.num_eval_episodes
+reward_cost_key: scalar_cost
+
+recommended_first_scenarios:
+  - level1_hard
+  - level1_easy
+  - level3_medium
+  - level2_medium
+
+recommended_conservative_sweep:
+  repair_target_mode: [soft, surface]
+  pairwise_candidate_mode: [adjacent]
+  use_repair_gate: [true]
+  soft_target_temperature: [1.0, 2.0, 4.0]
+  repair_target_blend: [0.75, 1.0]
+  target_residual_norm_clip: [0.0]
+  delta_max_fraction: [0.10, 0.12]
+  search_radius_fraction: [0.10]
+  improvement_epsilon: [0.10]

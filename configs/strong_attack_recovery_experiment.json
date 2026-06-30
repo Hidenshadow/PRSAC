@@ -1,0 +1,23 @@
+{
+  "description": "Standalone strong environmental attack stress test and recovery fine-tuning workflow. This does not replace the default robustness experiment.",
+  "base_config": "configs/ppo_lunar_map_pool_relative_reward.json",
+  "nominal_checkpoint": "runs/robustness/seed0/nominal_ppo/checkpoint.pt",
+  "output_root": "runs/strong_attack_recovery",
+  "sweep": {
+    "quick": true,
+    "num_episodes": 300,
+    "domains": "both",
+    "attack_strength_values": "1,3,5,8",
+    "target_low": 0.10,
+    "target_high": 0.30
+  },
+  "recovery": {
+    "finetune_timesteps": 50000,
+    "eval_interval": 1000,
+    "num_eval_episodes": 300
+  },
+  "policy_analysis": {
+    "num_episodes": 300,
+    "include_recovery": true
+  }
+}

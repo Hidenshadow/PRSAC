@@ -1,0 +1,41 @@
+{
+  "name": "VIPER",
+  "full_name": "Volatiles Investigating Polar Exploration Rover",
+  "source_notes": [
+    "NASA Science VIPER In Depth lists size 1.5m x 1.5m x 2.5m, mass 450kg, peak power 450W, and top speed 0.45mph/0.72kph.",
+    "NASA VIPER industry-day technical briefing lists rolling mass about 450kg, dimensions 1.7m x 1.7m x 2.5m, wheel diameter 0.5m, top speed 20cm/s, prospecting speed 10cm/s, waypoint driving 4.5m, camera look-ahead 8m, obstacles/slopes 15cm/15deg."
+  ],
+  "sources": [
+    "https://science.nasa.gov/mission/viper/in-depth/",
+    "https://science.nasa.gov/mission/viper/rover-and-instruments/",
+    "https://science.nasa.gov/wp-content/uploads/2024/08/viper-rfi-industry-day-presentation-as-presented-2024-08-22.pdf"
+  ],
+  "body": {
+    "rolling_mass_kg": 450.0,
+    "public_length_m": 1.5,
+    "public_width_m": 1.5,
+    "technical_length_m": 1.7,
+    "technical_width_m": 1.7,
+    "height_m": 2.5
+  },
+  "mobility": {
+    "wheel_diameter_m": 0.5,
+    "obstacle_height_limit_m": 0.15,
+    "max_traversable_slope_deg": 15.0,
+    "top_speed_mps": 0.20,
+    "nominal_drive_speed_mps": 0.10,
+    "prospecting_speed_mps": 0.10,
+    "waypoint_command_distance_m": 4.5,
+    "camera_lookahead_m": 8.0
+  },
+  "power": {
+    "peak_power_w": 450.0,
+    "solar_array_power_w": 320.0
+  },
+  "simulation_assumptions": {
+    "lunar_gravity_mps2": 1.62,
+    "rolling_resistance_coeff": 0.12,
+    "energy_layer_is_proxy": true,
+    "slope_obstacle_threshold_uses_max_traversable_slope": true
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "description": "Formal PPO-only robustness experiment: nominal PPO, env-attack fine-tune, obs-attack fine-tune, in-domain and held-out evaluation.",
+  "base_config": "configs/ppo_lunar_map_pool_relative_reward.json",
+  "in_domain_config": "configs/evaluate_robustness_lunar_in_domain.json",
+  "heldout_config": "configs/evaluate_robustness_lunar_heldout.json",
+  "output_root": "runs/robustness",
+  "total_timesteps": 100000,
+  "finetune_timesteps": 50000,
+  "num_episodes": 500,
+  "skip_if_exists": false,
+  "visualize": true,
+  "visualize_output_dir": "runs/robustness/results/figures"
+}

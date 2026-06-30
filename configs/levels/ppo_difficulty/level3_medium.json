@@ -1,0 +1,14 @@
+{
+  "extends": "../mars_dtm.json",
+  "level": "mars_dtm_medium",
+  "difficulty": "medium",
+  "description": "Level 3 medium Mars PPO-only benchmark: 100x100 DTEED ridge submap with attack-sensitive traversability-risk corridors.",
+  "map_source": "maps/real_dem_tiles/marsdteed_ridge_pgda_500_level3_tile/real_map_layers.npz",
+  "metadata": "maps/real_dem_tiles/marsdteed_ridge_pgda_500_level3_tile/tile_metadata.json",
+  "tile_id": "marsdteed_ridge_pgda_500_level3_tile",
+  "min_distance_ratio": 0.68,
+  "task_sampling_mode": "risk_corridor",
+  "min_corridor_risk": 0.28,
+  "corridor_radius": 2,
+  "candidate_pool_multiplier": 100
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Robustness workflow: fine-tune PPO from nominal checkpoint under env_zscore_topk reward.",
+  "script": "run_robustness_workflow.py",
+  "args": {
+    "base-config": "configs/ppo_lunar_map_pool_relative_reward.json",
+    "mode": "finetune_env_attack",
+    "checkpoint": "runs/robustness/nominal_ppo/checkpoint.pt",
+    "output-root": "runs/robustness",
+    "finetune-timesteps": 15000
+  }
+}

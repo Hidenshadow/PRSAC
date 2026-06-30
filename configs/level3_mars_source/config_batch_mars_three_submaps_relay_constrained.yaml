@@ -1,0 +1,122 @@
+# Three archetype-diverse ~1 km Mars submaps under relay-constrained communication.
+# This benchmark keeps the Mars rover, DEMs, objectives, and task manifest fixed,
+# while reducing orbiter relay availability to induce stronger time/energy/slip/comms trade-offs.
+
+maps:
+  - name: "marsdteed_cratered_pgda_500"
+    file_path: "data/mars_pgda_submaps/marsdteed_cratered_pgda_500.npy"
+    resolution: 2.0103810127427
+  - name: "marsdteed_ridge_pgda_500"
+    file_path: "data/mars_pgda_submaps/marsdteed_ridge_pgda_500.npy"
+    resolution: 2.0103810127427
+  - name: "marsdteed_plain_pgda_500"
+    file_path: "data/mars_pgda_submaps/marsdteed_plain_pgda_500.npy"
+    resolution: 2.0103810127427
+
+simulation:
+  resolution: 2.0103810127427
+  zoom_size_m: 1000.0
+  center_keepout_m: 0.0
+
+sun:
+  elevation_deg: 15.0
+  azimuth_deg: 210.0
+
+comms:
+  model: "orbiter_relay"
+  relay_passes:
+    - elevation_deg: 12.0
+      azimuth_deg: 45.0
+    - elevation_deg: 18.0
+      azimuth_deg: 135.0
+  h_antenna_m: 2.0
+  aggregation: "mean"
+  viewshed_downsample: 4
+  visible_signal_value: 1.0
+  blocked_signal_value: 0.0
+
+weights:
+  num_samples: 3000
+
+parallel:
+  enabled: true
+  task_workers: 4
+
+leximin:
+  eps: 1.0e-12
+  length_detour_tau: 2.0
+
+selectors:
+  compare: ["Leximin", "WeightedSum", "WPM", "VIKOR", "TOPSIS"]
+  eps: 1.0e-12
+  length_detour_tau: 2.0
+  weights: [0.25, 0.25, 0.25, 0.25]
+  vikor_v: 0.5
+  static_lexicographic_order: [1, 2, 3, 0]
+  epsilon_primary_index: 0
+  epsilon_thresholds: [1.0, 0.35, 0.35, 0.10]
+
+planning:
+  soft_thresholds:
+    min_terrain_suitability: 0.25
+    min_solar_suitability: 0.25
+    min_comm_suitability: 0.0
+
+visualization:
+  enabled: true
+  subdir: "paper_figures"
+  formats: ["png", "svg"]
+  dpi: 300
+  style: "robotics_journal"
+  map_cmap: "mars"
+  environment_layers:
+    enabled: true
+    subdir: "environment_layers"
+    formats: ["png", "svg"]
+    export_panel: true
+    export_individual_layers: true
+
+robot:
+  profile: "MARS_ROVER"
+
+objectives:
+  mode: "mars_perseverance"
+  labels: ["Time", "Energy", "Slip", "Comms"]
+  directions: ["min", "min", "min", "max"]
+  terrain_type_inference: "map_name"
+
+study:
+  name: "Three Archetype-Diverse Mars HiRISE Submaps Pareto Selector Comparison (Relay-Constrained)"
+  scenario_name: "3 Mars HiRISE ~1000m x 1000m DEM submaps (crater, ridge, plain) from one DTEED source x 20 paired tasks/map x 3000 MFA* weight samples with Pareto-set selector comparison under relay-constrained orbiter communication availability"
+  representative_case_top_k: 10
+
+constraints:
+  safe_slope_deg: 15.0
+  max_slope_deg: 30.0
+  max_step_height_m: 0.4
+  max_roughness_m: 0.8
+  min_comm_suitability: 0.0
+
+files:
+  output_dir: "batch_test_outputs/mars_three_submaps_20tasks_3000samples_relay_constrained"
+
+batch_plus:
+  seed: 42
+  num_submaps_per_map: 1
+  tasks_per_submap: 20
+  task_manifest:
+    reuse_path: "batch_test_outputs/mars_three_submaps_20tasks_3000samples_orbiter_relay/all_tasks.csv"
+  task_validation:
+    resample_until_valid: true
+    max_attempts_per_distance_type: 250
+    max_draw_attempts_per_task: 20000
+  distance_type_counts:
+    short: 0
+    mid: 10
+    long: 10
+  distance_band_meters:
+    short: [75.0, 200.0]
+    mid: [250.0, 500.0]
+    long: [500.0, 850.0]
+  zoom_size_m: 1000.0
+  use_full_map_as_single_submap: true

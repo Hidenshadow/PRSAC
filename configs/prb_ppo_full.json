@@ -1,0 +1,22 @@
+{
+  "algo": "prb_ppo",
+  "preset": "prb_mlp_aux005",
+  "recovery_timesteps": 20480,
+  "chunk_steps": 1024,
+  "eval_interval": 2048,
+  "eval_episodes": 128,
+  "validation_episodes": 64,
+  "prb_encoder_type": "mlp",
+  "prb_latent_dim": 64,
+  "prb_hidden_dim": 64,
+  "prb_aux_coef": 0.05,
+  "prb_use_component_costs": true,
+  "prb_use_scalar_cost": true,
+  "prb_normalize_features": true,
+  "prb_feature_clip": 5.0,
+  "prb_lambda_residual_total": 1.0,
+  "prb_lambda_true_total": 0.5,
+  "prb_lambda_component_residual": 1.0,
+  "prb_lambda_true_component": 0.5,
+  "official_attack_only": true
+}

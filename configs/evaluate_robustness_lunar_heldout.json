@@ -1,0 +1,22 @@
+{
+  "description": "Robustness evaluation on the held-out lunar seed1919 32-map pool.",
+  "script": "evaluate_robustness.py",
+  "args": {
+    "num-episodes": 500,
+    "seed": 222,
+    "map-size": 48,
+    "scenario": "lunar_rover",
+    "map-sampling-mode": "map_seed_pool",
+    "fixed-map-seed": 1919,
+    "map-seed-pool-size": 32,
+    "eval-domain": "heldout_seed1919",
+    "output": "runs/robustness/results/heldout_summary.csv",
+    "checkpoints": [
+      "nominal=runs/robustness/nominal_ppo/checkpoint.pt",
+      "env_ft=runs/robustness/env_attack_ppo/checkpoint.pt",
+      "obs_ft=runs/robustness/obs_attack_ppo/checkpoint.pt"
+    ],
+    "observation-attack-config": "{\"enabled\": true, \"type\": \"obs_gaussian_noise\", \"noise_std\": 0.05, \"seed\": 123, \"clip_to_observation_space\": true}",
+    "environment-attack-config": "{\"enabled\": true, \"type\": \"env_zscore_topk\", \"attacker_response\": \"zscore_topk\", \"attacker_temperature\": 0.5, \"attacker_top_fraction\": 0.15, \"attacker_sharpness\": 3.0}"
+  }
+}

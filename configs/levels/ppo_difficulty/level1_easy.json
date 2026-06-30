@@ -1,0 +1,11 @@
+{
+  "extends": "../synthetic_corridor.json",
+  "level": "synthetic_easy",
+  "difficulty": "easy",
+  "description": "Level 1 easy synthetic PPO-only benchmark: 40x40 controlled corridor maps.",
+  "scenario": "lunar_rover_corridor",
+  "map_size": 40,
+  "min_distance_ratio": 0.60,
+  "map_seed_pool_size": 16,
+  "fixed_map_seed": 707
+}

@@ -1,0 +1,11 @@
+{
+  "extends": "../synthetic_corridor.json",
+  "level": "synthetic_hard",
+  "difficulty": "hard",
+  "description": "Level 1 hard synthetic PPO-only benchmark: 80x80 bottleneck maps with stronger route conflict.",
+  "scenario": "lunar_rover_bottleneck",
+  "map_size": 80,
+  "min_distance_ratio": 0.75,
+  "map_seed_pool_size": 48,
+  "fixed_map_seed": 1111
+}

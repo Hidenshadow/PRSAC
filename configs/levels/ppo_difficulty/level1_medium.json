@@ -1,0 +1,11 @@
+{
+  "extends": "../synthetic_corridor.json",
+  "level": "synthetic_medium",
+  "difficulty": "medium",
+  "description": "Level 1 medium synthetic PPO-only benchmark: 60x60 uncertain hazard-corridor maps.",
+  "scenario": "uncertain_hazard_corridor",
+  "map_size": 60,
+  "min_distance_ratio": 0.68,
+  "map_seed_pool_size": 32,
+  "fixed_map_seed": 909
+}

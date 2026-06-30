@@ -1,0 +1,14 @@
+{
+  "extends": "../mars_dtm.json",
+  "level": "mars_dtm_hard",
+  "difficulty": "hard",
+  "description": "Level 3 hard Mars benchmark: 100x100 cratered DTEED submap with long attack-sensitive risk-corridor traverses and recoverable alternate routes.",
+  "map_source": "maps/real_dem_tiles/marsdteed_cratered_pgda_500_level3_tile/real_map_layers.npz",
+  "metadata": "maps/real_dem_tiles/marsdteed_cratered_pgda_500_level3_tile/tile_metadata.json",
+  "tile_id": "marsdteed_cratered_pgda_500_level3_tile",
+  "min_distance_ratio": 0.72,
+  "task_sampling_mode": "risk_corridor",
+  "min_corridor_risk": 0.38,
+  "corridor_radius": 2,
+  "candidate_pool_multiplier": 160
+}

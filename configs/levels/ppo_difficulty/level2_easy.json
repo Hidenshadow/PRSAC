@@ -1,0 +1,14 @@
+{
+  "extends": "../lunar_viper.json",
+  "level": "lunar_viper_easy",
+  "difficulty": "easy",
+  "description": "Level 2 easy Lunar/VIPER PPO-only benchmark: 40x40 VIPER real lunar submap near mild traversability boundaries with attack-sensitive risk-corridor traverses.",
+  "map_source": "maps/real_dem_tiles/viper_200m_tile/real_map_layers.npz",
+  "metadata": "maps/real_dem_tiles/viper_200m_tile/tile_metadata.json",
+  "tile_id": "viper_200m_tile",
+  "min_distance_ratio": 0.65,
+  "task_sampling_mode": "risk_corridor",
+  "min_corridor_risk": 0.62,
+  "corridor_radius": 2,
+  "candidate_pool_multiplier": 80
+}

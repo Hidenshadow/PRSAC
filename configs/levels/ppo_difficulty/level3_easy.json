@@ -1,0 +1,14 @@
+{
+  "extends": "../mars_dtm.json",
+  "level": "mars_dtm_easy",
+  "difficulty": "easy",
+  "description": "Level 3 easy Mars PPO-only benchmark: 40x40 smooth DTEED submap with long traverses through mild dust/power-risk corridors.",
+  "map_source": "maps/real_dem_tiles/marsdteed_40_tile/real_map_layers.npz",
+  "metadata": "maps/real_dem_tiles/marsdteed_40_tile/tile_metadata.json",
+  "tile_id": "marsdteed_40_tile",
+  "min_distance_ratio": 0.65,
+  "task_sampling_mode": "risk_corridor",
+  "min_corridor_risk": 0.42,
+  "corridor_radius": 2,
+  "candidate_pool_multiplier": 80
+}

@@ -1,0 +1,84 @@
+{
+  "level": "synthetic",
+  "scenario": "lunar_rover_corridor",
+  "description": "Level 1 controlled synthetic rover benchmark with route conflict.",
+  "base_config": "configs/ppo_lunar_corridor_relative_reward.json",
+  "nominal_checkpoint": "runs/corridor_main_strength3/lunar_rover_corridor/seed0/nominal_ppo/checkpoint.pt",
+  "environment_attack_config": "runs/corridor_main_strength3/lunar_rover_corridor/seed0/configs/path_corridor_attack.json",
+  "observation_mode": "terrain",
+  "reward_mode": "relative_heuristic",
+  "reward_scale": 10.0,
+  "reward_cost_key": "scalar_cost",
+  "action_mode": "preference_delta",
+  "action_gain": 3.0,
+  "max_uncertainty_lambda": 1.2,
+  "map_size": 48,
+  "map_sampling_mode": "map_seed_pool",
+  "fixed_map_seed": 909,
+  "map_seed_pool_size": 32,
+  "attacks": {
+    "environment": {
+      "enabled": true,
+      "type": "env_composite",
+      "name": "route_deception_hard",
+      "apply_during_training": true,
+      "reward_uses_attacked_cost": true,
+      "components": [
+        {
+          "enabled": true,
+          "type": "env_spatial_belief_mismatch",
+          "mode": "risk_underestimate",
+          "selection_mode": "deceptive_shortcut",
+          "corridor_radius": 4,
+          "attack_strength": 3.0,
+          "error_scale": 0.85,
+          "background_error_scale": 0.10,
+          "confidence_gamma": 0.85,
+          "correlation_sigma": 3.5,
+          "min_confidence": 0.10,
+          "max_confidence": 0.95,
+          "affected_layers": ["energy", "hazard", "communication", "illumination"],
+          "confidence_to_uncertainty": true,
+          "shortcut_attraction": 0.90,
+          "shortcut_consequence_weight": 0.05
+        },
+        {
+          "enabled": true,
+          "type": "env_spatial_belief_mismatch",
+          "mode": "risk_overestimate",
+          "selection_mode": "path_corridor",
+          "reference_policy": "risk_neutral_mission",
+          "corridor_radius": 3,
+          "attack_strength": 3.0,
+          "error_scale": 0.45,
+          "background_error_scale": 0.02,
+          "confidence_gamma": 0.90,
+          "correlation_sigma": 3.5,
+          "min_confidence": 0.10,
+          "max_confidence": 0.95,
+          "affected_layers": ["energy", "hazard", "communication", "illumination"],
+          "confidence_to_uncertainty": true
+        },
+        {
+          "enabled": true,
+          "type": "env_confidence_degradation",
+          "selection_mode": "deceptive_shortcut",
+          "corridor_radius": 4,
+          "degradation_scale": 0.65,
+          "background_degradation_scale": 0.08,
+          "confidence_floor": 0.05,
+          "confidence_gamma": 0.90,
+          "correlation_sigma": 3.5,
+          "affected_layers": ["energy", "hazard", "communication", "illumination"]
+        }
+      ]
+    },
+    "observation": {
+      "enabled": true,
+      "type": "obs_dropout",
+      "dropout_prob": 0.25,
+      "fill_value": 0.0,
+      "clip_to_observation_space": true
+    }
+  }
+}

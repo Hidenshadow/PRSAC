@@ -1,0 +1,64 @@
+﻿{
+  "name": "MARS_ROVER",
+  "full_name": "Perseverance-class Mars rover routing profile",
+  "source_notes": [
+    "Copied from the Mars rover profile used in <EXTERNAL_MAP_SOURCE_ROOT>.",
+    "The source project names this profile MARS_ROVER and aligns it with Perseverance-style mobility constants.",
+    "These parameters are used to derive Level 3 Mars DTM planner layers; they are a planning proxy, not a full wheel-soil dynamics model."
+  ],
+  "body": {
+    "rolling_mass_kg": 1025.0,
+    "length_m": 3.0,
+    "width_m": 2.7,
+    "height_m": 2.2
+  },
+  "mobility": {
+    "wheel_diameter_m": 0.525,
+    "obstacle_height_limit_m": 0.4,
+    "safe_slope_deg": 15.0,
+    "max_traversable_slope_deg": 30.0,
+    "top_speed_mps": 0.03333333333333333,
+    "nominal_drive_speed_mps": 0.03333333333333333,
+    "waypoint_command_distance_m": 10.0,
+    "camera_lookahead_m": 20.0
+  },
+  "power": {
+    "drive_power_w": 110.0,
+    "peak_power_w": 110.0,
+    "mission_time_limit_s": 43200.0,
+    "ideal_time_s": 24000.0,
+    "nadir_time_s": 43200.0,
+    "ideal_energy_kj": 2640.0,
+    "nadir_energy_kj": 4752.0
+  },
+  "simulation_assumptions": {
+    "gravity_mps2": 3.71,
+    "mars_gravity_mps2": 3.71,
+    "rolling_resistance_coeff": 0.12,
+    "slip_risk_gain": 2.0,
+    "drivetrain_efficiency": 0.55,
+    "uphill_speed_penalty_gain": 2.5,
+    "downhill_speed_penalty_gain": 1.25,
+    "energy_layer_is_proxy": true,
+    "slope_obstacle_threshold_uses_max_traversable_slope": true
+  },
+  "terrain_models": {
+    "bedrock": {
+      "speed_multiplier": 1.0,
+      "energy_multiplier": 1.0
+    },
+    "compact_regolith": {
+      "speed_multiplier": 1.1,
+      "energy_multiplier": 1.12
+    },
+    "rocky": {
+      "speed_multiplier": 1.25,
+      "energy_multiplier": 1.3
+    },
+    "loose_regolith": {
+      "speed_multiplier": 1.4,
+      "energy_multiplier": 1.5
+    }
+  }
+}
+

@@ -1,0 +1,121 @@
+$ErrorActionPreference = "Stop"
+
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Root = Split-Path -Parent $ScriptDir
+$Python = Join-Path $Root ".venv\Scripts\python.exe"
+$Runner = Join-Path $Root "run_shock_recovery_experiment.py"
+$OutRoot = Join-Path $Root "runs\sac_modified\ldac_v2_medium_seed0_1_20260621"
+$LogRoot = Join-Path $OutRoot "logs"
+$MaxParallel = 2
+
+function Get-CpuAffinityMask {
+    $logical = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
+    # Leave a little headroom for Windows and monitoring processes so total CPU stays near 80%.
+    $limit = [Math]::Max(1, [Math]::Floor($logical * 0.75))
+    $mask = [int64]0
+    for ($i = 0; $i -lt $limit; $i++) {
+        $mask = $mask -bor ([int64]1 -shl $i)
+    }
+    return [pscustomobject]@{
+        Mask = $mask
+        Limit = $limit
+        Logical = $logical
+    }
+}
+
+$Affinity = Get-CpuAffinityMask
+try {
+    (Get-Process -Id $PID).ProcessorAffinity = [IntPtr]$Affinity.Mask
+    Write-Host ("Scheduler CPU affinity: {0}/{1} logical cores" -f $Affinity.Limit, $Affinity.Logical)
+} catch {
+    Write-Host "Scheduler CPU affinity could not be set."
+}
+
+$Experiments = @(
+    @{ Level = "level1_medium"; Config = "configs\levels\ppo_difficulty\level1_medium.json"; EvalEpisodes = 300 },
+    @{ Level = "level2_medium"; Config = "configs\levels\ppo_difficulty\level2_medium.json"; EvalEpisodes = 128 },
+    @{ Level = "level3_medium"; Config = "configs\levels\ppo_difficulty\level3_medium.json"; EvalEpisodes = 128 }
+)
+
+New-Item -ItemType Directory -Force -Path $OutRoot | Out-Null
+New-Item -ItemType Directory -Force -Path $LogRoot | Out-Null
+
+$queue = New-Object System.Collections.Queue
+foreach ($exp in $Experiments) {
+    foreach ($seed in 0, 1) {
+        $queue.Enqueue(@{
+            Level = $exp.Level
+            Config = $exp.Config
+            EvalEpisodes = $exp.EvalEpisodes
+            Seed = $seed
+        })
+    }
+}
+
+$running = @()
+while ($queue.Count -gt 0 -or $running.Count -gt 0) {
+    while ($queue.Count -gt 0 -and $running.Count -lt $MaxParallel) {
+        $job = $queue.Dequeue()
+        $jobOut = Join-Path $OutRoot (Join-Path $job.Level ("seed" + $job.Seed))
+        $logPrefix = "{0}_seed{1}" -f $job.Level, $job.Seed
+        $stdout = Join-Path $LogRoot ($logPrefix + "_stdout.log")
+        $stderr = Join-Path $LogRoot ($logPrefix + "_stderr.log")
+        $argsList = @(
+            $Runner,
+            "--algo", "sac",
+            "--level-config", (Join-Path $Root $job.Config),
+            "--output-dir", $jobOut,
+            "--nominal-timesteps", "50000",
+            "--recovery-timesteps", "20480",
+            "--eval-interval", "1024",
+            "--num-eval-episodes", [string]$job.EvalEpisodes,
+            "--train-eval-episodes", "64",
+            "--seed", [string]$job.Seed,
+            "--in-domain-seed", "909",
+            "--heldout-seed", "1919",
+            "--python", $Python,
+            "--device", "cpu",
+            "--clean-output",
+            "--sac-game-recovery-enabled",
+            "--sac-game-anchor-coef", "0.40",
+            "--sac-game-advantage-coef", "0.12",
+            "--sac-game-q-margin", "0.02",
+            "--sac-game-gate-temperature", "0.05",
+            "--sac-game-anchor-barrier-coef", "1.5",
+            "--sac-game-anchor-radius", "0.12",
+            "--sac-recovery-deterministic-actor-update",
+            "--sac-recovery-fixed-alpha", "0.015",
+            "--sac-recovery-target-entropy-scale", "0.05",
+            "--sac-recovery-rollout-deterministic-prob", "0.85",
+            "--sac-recovery-rollout-noise-std", "0.015",
+            "--sac-recovery-log-std-penalty-coef", "0.01",
+            "--sac-recovery-log-std-target", "-2.0"
+        )
+        $proc = Start-Process -FilePath $Python -ArgumentList $argsList -WorkingDirectory $Root -PassThru -WindowStyle Hidden -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+        try {
+            $proc.ProcessorAffinity = [IntPtr]$Affinity.Mask
+        } catch {
+            Write-Host ("Could not set CPU affinity for PID={0}" -f $proc.Id)
+        }
+        $running += [pscustomobject]@{
+            Process = $proc
+            Level = $job.Level
+            Seed = $job.Seed
+            Output = $jobOut
+        }
+        Write-Host ("Started {0} seed{1}: PID={2}" -f $job.Level, $job.Seed, $proc.Id)
+    }
+
+    Start-Sleep -Seconds 30
+    $stillRunning = @()
+    foreach ($item in $running) {
+        if ($item.Process.HasExited) {
+            Write-Host ("Finished {0} seed{1}: exit={2}" -f $item.Level, $item.Seed, $item.Process.ExitCode)
+        } else {
+            $stillRunning += $item
+        }
+    }
+    $running = $stillRunning
+}
+
+Write-Host ("All LDAC-SAC v2 medium seed0/1 experiments finished: {0}" -f $OutRoot)

@@ -1,0 +1,152 @@
+# Mars boundary-crossing relay-stress benchmark for selector fairness under stronger objective conflict.
+#
+# This keeps the Perseverance-class rover profile and HiRISE DEMs, but uses
+# low-elevation relay geometries and time-windowed relay passes so communication
+# is no longer saturated. Tasks are sampled across communication boundaries to
+# mimic traverses from safer relay-visible regions toward science targets in
+# poorer relay coverage. Mars candidate generation uses normalized per-step
+# planning terms; selector evaluation still uses physical objectives: time,
+# energy, slip, and comms.
+
+maps:
+  - name: "marsdteed_cratered_pgda_500"
+    file_path: "data/mars_pgda_submaps/marsdteed_cratered_pgda_500.npy"
+    resolution: 2.0103810127427
+  - name: "marsdteed_ridge_pgda_500"
+    file_path: "data/mars_pgda_submaps/marsdteed_ridge_pgda_500.npy"
+    resolution: 2.0103810127427
+  - name: "marsdteed_plain_pgda_500"
+    file_path: "data/mars_pgda_submaps/marsdteed_plain_pgda_500.npy"
+    resolution: 2.0103810127427
+
+simulation:
+  resolution: 2.0103810127427
+  zoom_size_m: 1000.0
+  center_keepout_m: 0.0
+
+sun:
+  elevation_deg: 15.0
+  azimuth_deg: 210.0
+
+comms:
+  model: "orbiter_relay"
+  relay_passes:
+    - elevation_deg: 2.0
+      azimuth_deg: 45.0
+      window_start_s: 0.0
+      window_duration_s: 1200.0
+      repeat_period_s: 7200.0
+    - elevation_deg: 2.0
+      azimuth_deg: 135.0
+      window_start_s: 3600.0
+      window_duration_s: 1200.0
+      repeat_period_s: 7200.0
+  h_antenna_m: 2.0
+  aggregation: "mean"
+  viewshed_downsample: 4
+  visible_signal_value: 1.0
+  blocked_signal_value: 0.0
+  temporal_windows:
+    enabled: true
+    default_window_duration_s: 1200.0
+    repeat_period_s: 7200.0
+
+weights:
+  num_samples: 3000
+  bounds_L: [0.10, 0.10, 0.05, 0.05]
+  bounds_U: [0.70, 0.70, 0.50, 0.50]
+  adaptive_discovery:
+    enabled: true
+    min_samples: 600
+    patience: 600
+
+parallel:
+  enabled: true
+  task_workers: 4
+
+leximin:
+  eps: 1.0e-12
+  length_detour_tau: 2.0
+
+selectors:
+  compare: ["Leximin", "WeightedSum", "WPM", "MinMaxDiss", "VIKOR", "TOPSIS"]
+  eps: 1.0e-12
+  length_detour_tau: 2.0
+  weights: [0.25, 0.25, 0.25, 0.25]
+  vikor_v: 0.5
+  static_lexicographic_order: [1, 2, 3, 0]
+  epsilon_primary_index: 0
+  epsilon_thresholds: [1.0, 0.35, 0.35, 0.10]
+
+planning:
+  soft_thresholds:
+    min_terrain_suitability: 0.25
+    min_solar_suitability: 0.25
+    min_comm_suitability: 0.0
+  mars_cost_normalization:
+    enabled: true
+    comm_scale: 1.0
+
+visualization:
+  enabled: true
+  subdir: "paper_figures"
+  formats: ["png", "svg"]
+  dpi: 300
+  style: "robotics_journal"
+  map_cmap: "mars"
+  environment_layers:
+    enabled: true
+    subdir: "environment_layers"
+    formats: ["png", "svg"]
+    export_panel: true
+    export_individual_layers: true
+
+robot:
+  profile: "MARS_ROVER"
+
+objectives:
+  mode: "mars_perseverance"
+  labels: ["Time", "Energy", "Slip", "Comms"]
+  directions: ["min", "min", "min", "max"]
+  terrain_type_inference: "map_name"
+
+study:
+  name: "Three Mars HiRISE Submaps Pareto Selector Comparison (Boundary-Crossing Relay-Window Stress)"
+  scenario_name: "3 Mars HiRISE ~1000m x 1000m DEM submaps x 20 boundary-crossing tasks/map x 3000 MFA* weight samples with normalized Mars candidate generation and low-elevation time-windowed orbiter relay communication stress"
+  representative_case_top_k: 10
+
+constraints:
+  safe_slope_deg: 15.0
+  max_slope_deg: 30.0
+  max_step_height_m: 0.4
+  max_roughness_m: 0.8
+  min_comm_suitability: 0.0
+
+files:
+  output_dir: "batch_test_outputs/mars_three_submaps_20tasks_3000samples_boundary_relay_stress"
+
+batch_plus:
+  seed: 42
+  num_submaps_per_map: 1
+  tasks_per_submap: 20
+  task_sampling:
+    strategy: "communication_boundary"
+    layer: "S_commu"
+    low_quantile: 0.35
+    high_quantile: 0.65
+    min_pool_size: 16
+    bidirectional: true
+  task_validation:
+    resample_until_valid: true
+    max_attempts_per_distance_type: 500
+    max_draw_attempts_per_task: 30000
+  distance_type_counts:
+    short: 0
+    mid: 8
+    long: 12
+  distance_band_meters:
+    short: [75.0, 200.0]
+    mid: [250.0, 500.0]
+    long: [500.0, 850.0]
+  zoom_size_m: 1000.0
+  use_full_map_as_single_submap: true
