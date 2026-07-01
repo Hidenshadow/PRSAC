@@ -3,8 +3,6 @@
   "scenario": "lunar_rover_corridor",
   "description": "Level 1 controlled synthetic rover benchmark with route conflict.",
   "base_config": "configs/ppo_lunar_corridor_relative_reward.json",
-  "nominal_checkpoint": "runs/corridor_main_strength3/lunar_rover_corridor/seed0/nominal_ppo/checkpoint.pt",
-  "environment_attack_config": "runs/corridor_main_strength3/lunar_rover_corridor/seed0/configs/path_corridor_attack.json",
   "observation_mode": "terrain",
   "reward_mode": "relative_heuristic",
   "reward_scale": 10.0,

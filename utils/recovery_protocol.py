@@ -117,13 +117,13 @@ def acbr_structured_candidates(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-config", type=str, default="configs/ppo_lunar_map_pool_relative_reward.json")
-    parser.add_argument("--checkpoint", type=str, default="runs/robustness/seed0/nominal_ppo/checkpoint.pt")
+    parser.add_argument("--checkpoint", type=str, default=None)
     parser.add_argument(
         "--attack-config",
         type=str,
-        default="runs/robustness/attack_sweep/recommended_attack_config.json",
+        default=None,
     )
-    parser.add_argument("--output-dir", type=str, default="runs/robustness/recovery_env_attack")
+    parser.add_argument("--output-dir", type=str, default="runs/recovery_protocol")
     parser.add_argument("--finetune-timesteps", type=int, default=30000)
     parser.add_argument("--eval-interval", type=int, default=1000)
     parser.add_argument("--num-eval-episodes", type=int, default=300)
