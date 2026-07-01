@@ -16,8 +16,8 @@ if ($dirty) {
     throw "Working tree is not clean. Commit or discard local changes before pushing."
 }
 
-$existing = git remote get-url origin 2>$null
-if ($LASTEXITCODE -eq 0 -and $existing) {
+$remotes = git remote
+if ($remotes -contains "origin") {
     git remote set-url origin $RemoteUrl
 }
 else {
