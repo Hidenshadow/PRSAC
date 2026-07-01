@@ -1,8 +1,4 @@
-"""Fine-tune a nominal PPO policy under a strong environmental attack.
-
-The script trains in short chunks so that every chunk boundary becomes an
-evaluation checkpoint for the recovery curve.
-"""
+"""Shared recovery-protocol helpers for the paper experiments."""
 
 from __future__ import annotations
 

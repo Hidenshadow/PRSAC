@@ -32,7 +32,7 @@ import pandas as pd
 
 from envs.attack_wrappers import attack_enabled
 from maps.real_terrain import load_real_layers
-from run_attack_recovery_finetune import (
+from utils.recovery_protocol import (
     build_train_command,
     checkpoint_step,
     clean_output_dir,
@@ -43,7 +43,7 @@ from run_attack_recovery_finetune import (
     run_name_for_algo,
     training_script_for_algo,
 )
-from run_lunar_viper_staged_recovery import (
+from utils.real_terrain_protocol import (
     command_from_args,
     generate_real_episodes,
     load_environment_attack,

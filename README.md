@@ -11,12 +11,13 @@ the legacy internal name `ldac`; those entries correspond to PR-SAC.
 ## Repository Layout
 
 - `maps/`, `envs/`, `planners/`, `utils/`: map generation/loading, corrupted-belief
-  wrappers, weighted A* planning, metrics, policy loading, and plotting helpers.
+  wrappers, weighted A* planning, metrics, policy loading, and shared recovery
+  helpers.
 - `configs/levels/ppo_difficulty/`: the nine Easy/Medium/Hard by Level 1/2/3
   scenario definitions used by the paper.
 - `configs/rovers/`: rover parameter files for the lunar and Mars levels.
-- `scripts/`: curated launch, evaluation, table, and figure-generation utilities
-  used for the paper experiments.
+- `scripts/`: only the non-learning baseline evaluator, robust-SAC recovery
+  preparation scripts, and Mars terrain preprocessing helpers.
 - `train_cleanrl_ppo.py`, `train_cleanrl_sac.py`: PPO and SAC trainers for
   planner-preference policies.
 - `run_shock_recovery_experiment.py`: clean training, corrupted-belief drop
@@ -73,25 +74,16 @@ python train_cleanrl_sac.py --help
 python scripts/evaluate_nonlearning_planner_baselines.py --help
 ```
 
-The paper launch scripts include:
-
-- `scripts/run_ppo_shock_recovery_3levels.sh`
-- `scripts/run_rl_baselines_shock_recovery_3levels.sh`
-- `scripts/run_cdr_sac_recovery_9scenarios_2seeds.ps1`
-- `scripts/run_stackelberg_sac_recovery_9scenarios_2seeds.ps1`
-- `scripts/run_valt_sac_recovery_9scenarios_2seeds.ps1`
-- `scripts/run_sac_ldac_*.ps1` for PR-SAC recovery runs.
-
 Non-learning baselines are evaluated with:
 
 ```bash
 python scripts/evaluate_nonlearning_planner_baselines.py --help
 ```
 
-Paper tables and learning-curve figures are regenerated with the `make_*`,
-`update_*`, `plot_*`, and `export_three_stage_training_subfigures.py` scripts in
-`scripts/`. These scripts expect experiment outputs under `runs/`, which is
-ignored by Git.
+The release deliberately omits plotting, table-generation, front-page figure,
+appendix figure, and local launch/watch scripts. Reproduction is driven by the
+Python training/evaluation entry points above; new outputs are written under
+`runs/`, which is ignored by Git.
 
 ## Excluded Artifacts
 
@@ -102,4 +94,3 @@ This release excludes:
 - trained checkpoints and model weights;
 - raw DEM/DTM rasters and derived `.npy`/`.npz` terrain arrays;
 - local IDE, virtual environment, and machine-specific files.
-

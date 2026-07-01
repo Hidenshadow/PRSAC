@@ -27,8 +27,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from envs.attack_wrappers import apply_environment_attack_to_episode, attack_enabled  # noqa: E402
-from run_attack_recovery_finetune import config_value, generate_episodes  # noqa: E402
-from run_lunar_viper_staged_recovery import generate_real_episodes  # noqa: E402
+from utils.recovery_protocol import config_value, generate_episodes  # noqa: E402
+from utils.real_terrain_protocol import generate_real_episodes  # noqa: E402
 from run_shock_recovery_experiment import (  # noqa: E402
     benchmark_attack_variant,
     component_attack_variants,
