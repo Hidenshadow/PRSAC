@@ -1,15 +1,26 @@
-﻿# Anonymous Reproducibility Release
+# PR-SAC Reproducibility Code
 
-This repository contains the code needed to reproduce the experiments for the submitted paper on robust global path recovery under corrupted multi-layer terrain beliefs. It intentionally excludes trained checkpoints, raw experiment outputs, generated figures, local logs, and large terrain rasters.
+This anonymous repository contains the code used for the paper on robust global
+path recovery for planetary rovers under corrupted multi-layer terrain beliefs.
+It is a source-code release only: trained checkpoints, raw experiment outputs,
+generated figures, logs, and large DEM/DTM files are intentionally excluded.
 
-## Contents
+PR-SAC is the paper name of the proposed method. Some implementation files keep
+the legacy internal name `ldac`; those entries correspond to PR-SAC.
 
-- `algorithms/`, `envs/`, `planners/`, and `utils/`: planner, environment, and learning components.
-- `configs/`: scenario, rover, and training configuration files.
-- `scripts/`: experiment launch, preprocessing, evaluation, and plotting utilities.
-- top-level `run_*.py`, `train_cleanrl_*.py`, and `evaluate_*.py`: main experiment entry points.
+## Repository Layout
 
-Some internal filenames retain legacy implementation names such as `ldac`; these correspond to the submitted method name PR-SAC.
+- `maps/`, `envs/`, `planners/`, `utils/`: map generation/loading, corrupted-belief
+  wrappers, weighted A* planning, metrics, policy loading, and plotting helpers.
+- `configs/levels/ppo_difficulty/`: the nine Easy/Medium/Hard by Level 1/2/3
+  scenario definitions used by the paper.
+- `configs/rovers/`: rover parameter files for the lunar and Mars levels.
+- `scripts/`: curated launch, evaluation, table, and figure-generation utilities
+  used for the paper experiments.
+- `train_cleanrl_ppo.py`, `train_cleanrl_sac.py`: PPO and SAC trainers for
+  planner-preference policies.
+- `run_shock_recovery_experiment.py`: clean training, corrupted-belief drop
+  evaluation, and recovery training protocol.
 
 ## Installation
 
@@ -29,26 +40,31 @@ pip install -r requirements.txt
 
 ## Public Terrain Data
 
-The release does not include large DEM/DTM files. The real-terrain levels can be regenerated from public sources:
+Level 1 uses synthetic controlled maps generated from fixed seeds and requires
+no external download.
 
-- Lunar Level 2: NASA PGDA LOLA NPD 5 m/pixel surface DEM, `NPD_final_adj_5mpp_surf.tif`.
-  Download: https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/NPD/NPD_final_adj_5mpp_surf.tif
-- Mars Level 3: HiRISE/PDS DTM product `DTEED_076968_1475_076823_1475_A01`.
-  Product page: https://www.uahirise.org/dtm/ESP_076968_1475
-  PDS directory: https://hirise.lpl.arizona.edu/PDS/DTM/ESP/ORB_076900_076999/ESP_076968_1475_ESP_076823_1475/
+Level 2 uses NASA PGDA LOLA lunar south-pole terrain:
+https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/NPD/NPD_final_adj_5mpp_surf.tif
 
-Use the preprocessing scripts in `scripts/` and `extract_real_dem_tile.py` to recreate project-format terrain tiles from these public products.
+Level 3 uses the HiRISE/PDS Mars DTM product:
+https://www.uahirise.org/dtm/ESP_076968_1475
 
-## Reproducing Experiments
+The raw public rasters and derived numpy terrain tiles are not committed. See
+`docs/DATA_SOURCES.md`, `extract_real_dem_tile.py`,
+`scripts/prepare_level3_mars_assets.py`, and
+`scripts/prepare_level3_mars_dteed_difficulty_tiles.py` for recreation steps.
 
-The experiment protocol is:
+## Reproduction Workflow
 
-1. clean-policy training;
-2. corrupted-belief drop evaluation;
-3. recovery training under corrupted planner-visible terrain beliefs;
-4. held-out evaluation using true terrain-cost maps for reward/evaluation only.
+The main experiment protocol is:
 
-Representative entry points:
+1. Train a clean planner-preference policy.
+2. Evaluate the clean policy after the corrupted terrain belief is introduced.
+3. Fine-tune under the corrupted planner-visible belief.
+4. Evaluate held-out performance with the true/reference terrain cost used only
+   for reward and evaluation.
+
+Representative commands:
 
 ```bash
 python run_shock_recovery_experiment.py --help
@@ -57,13 +73,33 @@ python train_cleanrl_sac.py --help
 python scripts/evaluate_nonlearning_planner_baselines.py --help
 ```
 
-For full reproduction, run the scenario-specific launch scripts under `scripts/` after preparing terrain tiles. New outputs are written to `runs/`, which is ignored by Git.
+The paper launch scripts include:
 
-## Excluded Files
+- `scripts/run_ppo_shock_recovery_3levels.sh`
+- `scripts/run_rl_baselines_shock_recovery_3levels.sh`
+- `scripts/run_cdr_sac_recovery_9scenarios_2seeds.ps1`
+- `scripts/run_stackelberg_sac_recovery_9scenarios_2seeds.ps1`
+- `scripts/run_valt_sac_recovery_9scenarios_2seeds.ps1`
+- `scripts/run_sac_ldac_*.ps1` for PR-SAC recovery runs.
 
-This anonymous release intentionally excludes:
+Non-learning baselines are evaluated with:
 
-- `runs/`, `exports/`, result tables, generated figures, logs, and TensorBoard files;
+```bash
+python scripts/evaluate_nonlearning_planner_baselines.py --help
+```
+
+Paper tables and learning-curve figures are regenerated with the `make_*`,
+`update_*`, `plot_*`, and `export_three_stage_training_subfigures.py` scripts in
+`scripts/`. These scripts expect experiment outputs under `runs/`, which is
+ignored by Git.
+
+## Excluded Artifacts
+
+This release excludes:
+
+- `runs/`, `exports/`, result tables, generated figures, logs, and TensorBoard
+  files;
 - trained checkpoints and model weights;
-- raw DEM/DTM rasters and derived numpy terrain arrays;
+- raw DEM/DTM rasters and derived `.npy`/`.npz` terrain arrays;
 - local IDE, virtual environment, and machine-specific files.
+
